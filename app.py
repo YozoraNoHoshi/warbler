@@ -303,6 +303,16 @@ def messages_destroy(message_id):
     return redirect(f"/users/{g.user.id}")
 
 
+@app.route('/messages/<id>/like', methods=["POST"])
+def like_msg(id):
+    pass
+
+
+@app.route('/messages/<id>/unlike', methods=["POST"])
+def unlike_msg(id):
+    pass
+
+
 ##############################################################################
 # Homepage and error pages
 
