@@ -3,9 +3,10 @@
   <div class="col-sm-9">
     <div class="row">
 
-      {% for followee in user.following %}
-
-        <div class="col-lg-4 col-md-6 col-12">
+      {# user = followee #}
+      {% for user in user.following %}
+        {% include "/users/user_card_insert.html" %}
+        <!-- <div class="col-lg-4 col-md-6 col-12">
           <div class="card user-card">
             <div class="card-inner">
               <div class="image-wrapper">
@@ -30,7 +31,7 @@
               <p class="card-bio">{{ followee.bio }}</p>
             </div>
           </div>
-        </div>
+        </div> -->
 
       {% endfor %}
 

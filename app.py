@@ -326,7 +326,7 @@ def homepage():
     """
 
     if g.user:
-        msg_people_ifollow = [f.id for f in g.user.following]
+        msg_people_ifollow = {f.id for f in g.user.following}
         messages = (Message.query.filter(
             or_(Message.user_id == g.user.id,
                 Message.user_id.in_(msg_people_ifollow))).order_by(
