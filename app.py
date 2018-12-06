@@ -112,7 +112,7 @@ def logout():
     """Handle logout of user."""
 
     do_logout()
-    flash('You have been successfully logged out.')
+    flash('You have been successfully logged out.', "success")
     return redirect('/login')
 
 
