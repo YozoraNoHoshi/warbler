@@ -166,6 +166,12 @@ class Message(db.Model):
         nullable=False,
     )
 
+    def is_liked_by(self, user):
+        """Is this message is liked by this user"""
+
+        found_user_list = [u for u in self.favbyuser if u.id == user.id]
+        return len(found_user_list) == 1
+
 
 class Like(db.Model):
     """Connection of user with message."""
@@ -183,6 +189,9 @@ class Like(db.Model):
         db.ForeignKey('messages.id', ondelete="cascade"),
         primary_key=True,
     )
+
+    favs_user = db.relationship("User", backref="favsbyuser")
+    favs_msg = db.relationship("Message", backref="favsbymsg")
 
 
 def connect_db(app):

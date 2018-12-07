@@ -3,9 +3,9 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
 
@@ -303,14 +303,30 @@ def messages_destroy(message_id):
     return redirect(f"/users/{g.user.id}")
 
 
-@app.route('/messages/<id>/like', methods=["POST"])
+@app.route('/messages/<int:id>/like', methods=["POST"])
 def like_msg(id):
-    pass
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    likes = Like(user_id=g.user.id, message_id=id)
+    db.session.add(likes)
+    db.session.commit()
+
+    return redirect(f"/messages/{id}")
 
 
-@app.route('/messages/<id>/unlike', methods=["POST"])
+@app.route('/messages/<int:id>/unlike', methods=["POST"])
 def unlike_msg(id):
-    pass
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    unlike = Like.query.get_or_404((g.user.id, id))
+    # Added a tuple to delete
+    db.session.delete(unlike)
+    db.session.commit()
+    return redirect(f"/messages/{id}")
 
 
 ##############################################################################
