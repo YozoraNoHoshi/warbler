@@ -147,7 +147,10 @@ def users_show(user_id):
     # user.messages won't be in order by default
     messages = (Message.query.filter(Message.user_id == user_id).order_by(
         Message.timestamp.desc()).limit(100).all())
-    return render_template('users/show.html', user=user, messages=messages)
+    # additional : adding a likes query to pass into the function to display number of likes by the user(Not working)
+    likes = Like.query.filter(Like.user_id == g.user.id).all()
+    return render_template(
+        'users/show.html', user=user, messages=messages, likes=likes)
 
 
 @app.route('/users/<int:user_id>/following')
@@ -301,6 +304,28 @@ def messages_destroy(message_id):
     db.session.commit()
 
     return redirect(f"/users/{g.user.id}")
+
+
+# additional showing only liked
+@app.route('/users/<int:user_id>/likes', methods=["GET"])
+def liked_messages_show(user_id):
+    """Show a message."""
+    # likes = Like.query.getlist(Like.message_id)
+    # msg = Message.query.get(message_id)
+    # msg = Likes.query.filter(Likes.user_id == g.user.id)
+    user = User.query.get_or_404(user_id)
+
+    # snagging messages in order from the database;
+    # user.messages won't be in order by default
+    message = user.favs
+    print("-------\n\n", user.favs, "-------\n\n")
+    # additional : adding a likes query to pass into the function to display number of likes by the user(Not working)
+    # likes = Like.query.filter(Like.user_id == g.user.id).all()
+
+    # msg_i_liked = [l.id for l in g.user.message_id]
+    # msg = Message.query.filter(Message.message_id.in_(msg_i_liked)).all()
+    # msg = Like.query.filter(Like.user_id == g.user.id).all()
+    return render_template('users/show.html', messages=message, user=user)
 
 
 @app.route('/messages/<int:id>/like', methods=["POST"])
