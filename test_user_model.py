@@ -39,36 +39,59 @@ class UserModelTestCase(TestCase):
 
         self.client = app.test_client()
 
+    def tearDown(self):
+        """Clear the session"""
+        db.session.remove()
+
+    def user_pair(self):
+        """Creates a pair of users for testing"""
+
         self.u = User(
             email="test@test.com",
             username="testuser",
             password="HASHED_PASSWORD")
-
-        db.session.add(self.u)
 
         self.u2 = User(
             email="test2@test.com",
             username="testuser2",
             password="HASHED_PASSWORD")
 
+        db.session.add(self.u)
         db.session.add(self.u2)
+        db.session.commit()
+
+    def signup_user(self):
+        """Creates a user for testing in the database"""
+
+        self.testuser3 = User.signup(
+            username="testuser3",
+            email="abc@abc.com",
+            password="123456",
+            image_url="/test.jpg")
+
         db.session.commit()
 
     def test_user_model(self):
         """Does basic model work?"""
+
+        self.user_pair()
 
         # User should have no messages & no followers
         self.assertEqual(len(self.u.messages), 0)
         self.assertEqual(len(self.u.followers), 0)
 
     def test_repr(self):
-        '''Testing for repr, using string from Models.py'''
+        '''Test of __repr__'''
+
+        self.user_pair()
 
         self.assertEqual(
             repr(self.u), f"<User #{self.u.id}: testuser, test@test.com>")
 
     def test_is_following(self):
-        '''Added two users above, append the relationship, test using "following" '''
+        """is_following should return true if user2 is following user"""
+
+        self.user_pair()
 
         self.u.following.append(self.u2)
         db.session.commit()
@@ -76,12 +99,16 @@ class UserModelTestCase(TestCase):
         self.assertEqual(self.u.is_following(self.u2), True)
 
     def test_is_not_following(self):
-        '''Removed append'''
+        '''is_following should return false if user2 is not following user'''
+
+        self.user_pair()
 
         self.assertEqual(self.u.is_following(self.u2), False)
 
     def test_is_followed_by(self):
-        '''Added two users above, append the relationship, test using  "followed" '''
+        '''is_followed_by should return true if a user is followed'''
+
+        self.user_pair()
 
         self.u.followers.append(self.u2)
         db.session.commit()
@@ -89,32 +116,29 @@ class UserModelTestCase(TestCase):
         self.assertEqual(self.u.is_followed_by(self.u2), True)
 
     def test_is_not_followed_by(self):
-        '''Removed append '''
+        '''is_followed_by should return false if a user is not followed. '''
+
+        self.user_pair()
 
         self.assertEqual(self.u.is_followed_by(self.u2), False)
 
     def test_create_User(self):
-        '''Creating a new user and manually checking password hash'''
+        '''A user is successfully created with the specified information'''
 
         from flask_bcrypt import Bcrypt
         bcrypt = Bcrypt()
 
-        sign_up_test = User.signup(
-            username="test",
-            password="test123",
-            email="abc@abc.com",
-            image_url="/test.jpg")
+        self.signup_user()
 
-        db.session.commit()
-
-        self.assertEqual(sign_up_test.username, 'test')
+        self.assertEqual(self.testuser3.username, 'testuser3')
         self.assertEqual(
-            bcrypt.check_password_hash(sign_up_test.password, "test123"), True)
-        self.assertEqual(sign_up_test.email, 'abc@abc.com')
-        self.assertEqual(sign_up_test.image_url, '/test.jpg')
+            bcrypt.check_password_hash(self.testuser3.password, "123456"),
+            True)
+        self.assertEqual(self.testuser3.email, 'abc@abc.com')
+        self.assertEqual(self.testuser3.image_url, '/test.jpg')
 
     def test_create_User_fail(self):
-        '''Checking if it raises ValueError when password is not passed. "as cm" should let you capture the type of error raised but we couldnt get it work'''
+        '''Checking if it raises ValueError when password is not passed.'''
 
         with self.assertRaises(ValueError):
             User.signup(
@@ -123,34 +147,19 @@ class UserModelTestCase(TestCase):
                 email="abc@abc.com",
                 image_url="/test.jpg")
 
-            # the_exception = cm.exception
-            # self.assertEqual(the_exception.error_code, 3)
-
     def test_user_authenticate(self):
         '''Tests if user is returned when authenticated, authenticate function accepts username and password'''
 
-        testuser3 = User.signup(
-            username="testuser3",
-            email="abc@abc.com",
-            password="123456",
-            image_url="/test.jpg")
-
-        db.session.commit()
+        self.signup_user()
 
         self.assertEqual(
             User.authenticate(username="testuser3", password="123456"),
-            testuser3)
+            self.testuser3)
 
     def test_fail_user_authenticate(self):
         '''Tests if an error is returned if credentials dont match'''
 
-        testuser3 = User.signup(
-            username="testuser3",
-            email="abc@abc.com",
-            password="123456",
-            image_url="/test.jpg")
-
-        db.session.commit()
+        self.signup_user()
 
         self.assertEqual(
             User.authenticate(username="testuser3", password="123abc"), False)

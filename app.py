@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import or_, and_
+from sqlalchemy import or_
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
 from models import db, connect_db, User, Message, Like
 
@@ -150,9 +150,8 @@ def users_show(user_id):
     # user.messages won't be in order by default
     messages = (Message.query.filter(Message.user_id == user_id).order_by(
         Message.timestamp.desc()).limit(100).all())
-    likes = Like.query.filter(Like.user_id == g.user.id).all()
-    return render_template(
-        'users/show.html', user=user, messages=messages, likes=likes)
+    # likes = Like.query.filter(Like.user_id == g.user.id).all()
+    return render_template('users/show.html', user=user, messages=messages)
 
 
 @app.route('/users/<int:user_id>/following')
@@ -384,6 +383,12 @@ def homepage():
 
     else:
         return render_template('home-anon.html')
+
+
+@app.errorhandler(404)
+def error404(error):
+    """Renders a template for a custom 404 page"""
+    return render_template('/error_404.html')
 
 
 ##############################################################################

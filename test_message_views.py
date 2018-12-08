@@ -4,11 +4,10 @@
 #
 #    FLASK_ENV=production python -m unittest test_message_views.py
 
-
 import os
 from unittest import TestCase
 
-from models import db, connect_db, Message, User
+from models import db, connect_db, Message, User, Like
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -16,7 +15,6 @@ from models import db, connect_db, Message, User
 # connected to the database
 
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
-
 
 # Now we can import app
 
@@ -44,10 +42,22 @@ class MessageViewTestCase(TestCase):
 
         self.client = app.test_client()
 
-        self.testuser = User.signup(username="testuser",
-                                    email="test@test.com",
-                                    password="testuser",
-                                    image_url=None)
+        self.testuser = User.signup(
+            username="testuser",
+            email="test@test.com",
+            password="testuser",
+            image_url=None)
+
+        db.session.commit()
+
+    def signup_user(self, username, email):
+        """Creates a user for testing in the database"""
+
+        self.testuser3 = User.signup(
+            username=username,
+            email=email,
+            password="123456",
+            image_url="/test.jpg")
 
         db.session.commit()
 
@@ -71,3 +81,95 @@ class MessageViewTestCase(TestCase):
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
+
+    def test_view_message(self):
+        """Does viewing a message render properly?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post("/messages/new", data={"text": "Hello"})
+            msg = Message.query.one()
+            get_msg = c.get(f"/messages/{msg.id}", data={"text": "Hello"})
+
+            # Make sure it redirects
+            self.assertEqual(get_msg.status_code, 200)
+
+            self.assertIn(b'Hello', get_msg.data)
+
+    def test_delete_message(self):
+        """Does a message get deleted properly?"""
+
+        from werkzeug.exceptions import NotFound
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post("/messages/new", data={"text": "Hello"})
+            msg = Message.query.one()
+
+            resp = c.post(f'/messages/{msg.id}/delete')
+
+            # Make sure it redirects
+            self.assertEqual(resp.status_code, 302)
+
+            with self.assertRaises(NotFound):
+                Message.query.get_or_404(msg.id)
+
+    def test_like_message(self):
+        """Does a message get liked properly?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post('/messages/')
+
+        testuser2 = User.signup(
+            username="bleggh",
+            email='123123@gmail.com',
+            password="123456",
+            image_url="/test.jpg")
+
+        db.session.add(testuser2)
+        db.session.commit()
+
+        new_msg = Message(text="A new message", user_id=testuser2.id)
+        db.session.add(new_msg)
+        db.session.commit()
+
+        resp = c.post(f'/messages/{new_msg.id}/like', follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(b'fas fa-thumbs-up', resp.data)
+
+    def test_unlike_message(self):
+        """Does a message get unliked properly?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post('/messages/')
+
+        testuser2 = User.signup(
+            username="bleggh",
+            email='123123@gmail.com',
+            password="123456",
+            image_url="/test.jpg")
+
+        db.session.add(testuser2)
+        db.session.commit()
+
+        new_msg = Message(text="A new message", user_id=testuser2.id)
+        db.session.add(new_msg)
+        db.session.commit()
+
+        likes = Like(user_id=self.testuser.id, message_id=new_msg.id)
+        db.session.add(likes)
+        db.session.commit()
+
+        resp = c.post(f'/messages/{new_msg.id}/unlike', follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(b'far fa-thumbs-up', resp.data)
