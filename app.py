@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask, render_template, request, flash, redirect, session, g, url_for
-from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
@@ -15,12 +14,15 @@ app = Flask(__name__)
 # if not set there, use development local db.
 app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ.get(
     'DATABASE_URL', 'postgres:///warbler'))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
-toolbar = DebugToolbarExtension(app)
+if os.environ.get('FLASK_ENV') == "development":
+    from flask_debugtoolbar import DebugToolbarExtension
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+    global toolbar
+    toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
