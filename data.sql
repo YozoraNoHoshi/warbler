@@ -34,7 +34,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: follows; Type: TABLE; Schema: public; Owner: nsena
+-- Name: follows; Type: TABLE; Schema: public; Owner: Hoshi
 --
 
 CREATE TABLE public.follows (
@@ -43,10 +43,10 @@ CREATE TABLE public.follows (
 );
 
 
-ALTER TABLE public.follows OWNER TO nsena;
+ALTER TABLE public.follows OWNER TO Hoshi;
 
 --
--- Name: likes; Type: TABLE; Schema: public; Owner: nsena
+-- Name: likes; Type: TABLE; Schema: public; Owner: Hoshi
 --
 
 CREATE TABLE public.likes (
@@ -55,10 +55,10 @@ CREATE TABLE public.likes (
 );
 
 
-ALTER TABLE public.likes OWNER TO nsena;
+ALTER TABLE public.likes OWNER TO Hoshi;
 
 --
--- Name: messages; Type: TABLE; Schema: public; Owner: nsena
+-- Name: messages; Type: TABLE; Schema: public; Owner: Hoshi
 --
 
 CREATE TABLE public.messages (
@@ -69,10 +69,10 @@ CREATE TABLE public.messages (
 );
 
 
-ALTER TABLE public.messages OWNER TO nsena;
+ALTER TABLE public.messages OWNER TO Hoshi;
 
 --
--- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: nsena
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: Hoshi
 --
 
 CREATE SEQUENCE public.messages_id_seq
@@ -84,17 +84,17 @@ CREATE SEQUENCE public.messages_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.messages_id_seq OWNER TO nsena;
+ALTER TABLE public.messages_id_seq OWNER TO Hoshi;
 
 --
--- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nsena
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Hoshi
 --
 
 ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: nsena
+-- Name: users; Type: TABLE; Schema: public; Owner: Hoshi
 --
 
 CREATE TABLE public.users (
@@ -109,10 +109,10 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO nsena;
+ALTER TABLE public.users OWNER TO Hoshi;
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: nsena
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: Hoshi
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -124,31 +124,31 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO nsena;
+ALTER TABLE public.users_id_seq OWNER TO Hoshi;
 
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nsena
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Hoshi
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: messages id; Type: DEFAULT; Schema: public; Owner: nsena
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: nsena
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Data for Name: follows; Type: TABLE DATA; Schema: public; Owner: nsena
+-- Data for Name: follows; Type: TABLE DATA; Schema: public; Owner: Hoshi
 --
 
 COPY public.follows (followee_id, follower_id) FROM stdin;
@@ -5157,7 +5157,7 @@ COPY public.follows (followee_id, follower_id) FROM stdin;
 
 
 --
--- Data for Name: likes; Type: TABLE DATA; Schema: public; Owner: nsena
+-- Data for Name: likes; Type: TABLE DATA; Schema: public; Owner: Hoshi
 --
 
 COPY public.likes (user_id, message_id) FROM stdin;
@@ -5166,7 +5166,7 @@ COPY public.likes (user_id, message_id) FROM stdin;
 
 
 --
--- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: nsena
+-- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: Hoshi
 --
 
 COPY public.messages (id, text, "timestamp", user_id) FROM stdin;
@@ -6174,7 +6174,7 @@ COPY public.messages (id, text, "timestamp", user_id) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: nsena
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: Hoshi
 --
 
 COPY public.users (id, email, username, image_url, header_image_url, bio, location, password) FROM stdin;
@@ -6483,21 +6483,21 @@ COPY public.users (id, email, username, image_url, header_image_url, bio, locati
 
 
 --
--- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: nsena
+-- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Hoshi
 --
 
 SELECT pg_catalog.setval('public.messages_id_seq', 1000, true);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: nsena
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Hoshi
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 301, true);
 
 
 --
--- Name: follows follows_pkey; Type: CONSTRAINT; Schema: public; Owner: nsena
+-- Name: follows follows_pkey; Type: CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.follows
@@ -6505,7 +6505,7 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: likes likes_pkey; Type: CONSTRAINT; Schema: public; Owner: nsena
+-- Name: likes likes_pkey; Type: CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.likes
@@ -6513,7 +6513,7 @@ ALTER TABLE ONLY public.likes
 
 
 --
--- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: nsena
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.messages
@@ -6521,7 +6521,7 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: nsena
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.users
@@ -6529,7 +6529,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: nsena
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.users
@@ -6537,7 +6537,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: nsena
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.users
@@ -6545,7 +6545,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: follows follows_followee_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: nsena
+-- Name: follows follows_followee_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.follows
@@ -6553,7 +6553,7 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: follows follows_follower_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: nsena
+-- Name: follows follows_follower_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.follows
@@ -6561,7 +6561,7 @@ ALTER TABLE ONLY public.follows
 
 
 --
--- Name: likes likes_message_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: nsena
+-- Name: likes likes_message_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.likes
@@ -6569,7 +6569,7 @@ ALTER TABLE ONLY public.likes
 
 
 --
--- Name: likes likes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: nsena
+-- Name: likes likes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.likes
@@ -6577,7 +6577,7 @@ ALTER TABLE ONLY public.likes
 
 
 --
--- Name: messages messages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: nsena
+-- Name: messages messages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: Hoshi
 --
 
 ALTER TABLE ONLY public.messages
