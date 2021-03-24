@@ -42,7 +42,7 @@ Pygments==2.2.0
 pylint==2.1.1
 python-dateutil==2.8.0
 PyYAML==3.13
-rsa==3.4.2
+rsa==4.1
 s3transfer==0.2.0
 six==1.11.0
 SQLAlchemy==1.2.18
